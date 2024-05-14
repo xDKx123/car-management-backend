@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import User, { IUser } from '../models/user';
 import { checkIsEmailValid, validateIdNumber } from '../utils/utils';
 import UserQuery from '../database/queries/user.query';
@@ -8,7 +8,7 @@ import { validationResult } from 'express-validator';
 import { concatPasswordAndSalt, encodePassword, generatePasswordSalt } from '../middleware/password';
 
 class UserController {
-    public static validateEmail = async (req: Request, res: Response): Promise<void> => {
+    public static validateEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -25,16 +25,12 @@ class UserController {
             return
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
-
-            return
+            next(error)
         }
     }
 
 
-    public static validatePhoneNumber = async (req: Request, res: Response): Promise<void> => {
+    public static validatePhoneNumber = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -55,13 +51,11 @@ class UserController {
             })
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     }
 
-    public static validateIdNumber = async (req: Request, res: Response): Promise<void> => {
+    public static validateIdNumber = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -79,14 +73,12 @@ class UserController {
             })
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     };
 
 
-    public static changePassword = async (req: Request, res: Response): Promise<void> => {
+    public static changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -111,15 +103,12 @@ class UserController {
             return
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
-            return
+            next(error)
         }
     }
 
 
-    public static userById = async (req: Request, res: Response): Promise<void> => {
+    public static userById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -139,13 +128,11 @@ class UserController {
             })
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     }
 
-    public static checkIfEmailExists = async (req: Request, res: Response): Promise<void> => {
+    public static checkIfEmailExists = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         const user = await UserQuery.getUserByEmail(data.email);
@@ -165,14 +152,10 @@ class UserController {
             return
         }
         catch (error: any) {
-            res.status(500).send({
-                error: error
-            })
-
-            return
+            next(error)
         }
     }
-    public static current = async (req: Request, res: Response): Promise<void> => {
+    public static current = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -187,15 +170,11 @@ class UserController {
             return
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
-
-            return
+            next(error)
         }
     }
 
-    public static create = async (req: Request, res: Response): Promise<void> => {
+    public static create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -223,11 +202,7 @@ class UserController {
             return
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
-
-            return
+            next(error)
         }
     };
 }

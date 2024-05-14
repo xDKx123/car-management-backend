@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Car from "../models/car";
 import CarBrand from "../models/carBrand";
 import CarModel from "../models/carModel";
@@ -6,7 +6,7 @@ import Contract from "../models/contract";
 import logger from "../logging/config";
 
 class ContractController {
-    public static loadContractsLeavingToday = async (req: Request, res: Response): Promise<void> => {
+    public static loadContractsLeavingToday = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -42,13 +42,11 @@ class ContractController {
             });
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     }
 
-    public static loadContractsReturningToday = async (req: Request, res: Response): Promise<void> => {
+    public static loadContractsReturningToday = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -83,13 +81,11 @@ class ContractController {
             });
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     }
 
-    public static loadContracts = async (req: Request, res: Response): Promise<void> => {
+    public static loadContracts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -141,13 +137,11 @@ class ContractController {
             });
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     }
 
-    public static addContract = async (req: Request, res: Response): Promise<void> => {
+    public static addContract = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -198,9 +192,7 @@ class ContractController {
             });
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     }
 }

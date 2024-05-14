@@ -7,7 +7,7 @@ module.exports = {
   coverageDirectory: 'coverage',
   collectCoverage: true,
   coverageReporters: ['json', 'html'],
-  setupFiles: ['<rootDir>/jest.setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   //detectLeaks: true,
-  //detectOpenHandles: true,
+  detectOpenHandles: true,
 };

@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import { CarBrand } from './carBrand';
+import {ICarBrand} from './carBrand';
 interface ICarModel extends mongoose.Document {
     name: string,
-    brand: CarBrand['_id']
+    brand: ICarBrand['_id']
 }
 
 const carModelSchema = new mongoose.Schema<ICarModel>(

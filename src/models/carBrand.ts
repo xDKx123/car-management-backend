@@ -14,7 +14,7 @@ const carBrandSchema = new mongoose.Schema<ICarBrand>(
 )
 
 export type {
-    ICarBrand as CarBrand
+    ICarBrand
 };
 
 const CarBrand = mongoose.model<ICarBrand>('CarBrand', carBrandSchema);

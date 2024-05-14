@@ -1,5 +1,16 @@
 import * as dotenv from 'dotenv';
+import express from 'express';
 
 dotenv.config({ path: './.test.env' });
 
-import './src/database/config';
+import { closeConnection, connectToDatabase } from './src/database/config';
+
+let server: any;
+beforeAll(() => {
+    connectToDatabase();
+
+});
+
+afterAll(() => {
+    closeConnection();
+});

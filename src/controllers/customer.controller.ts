@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import Customer from '../models/customer';
 import logger from '../logging/config';
 
@@ -9,7 +9,7 @@ interface SaveCustomerReturnType {
 }
 
 class CustomerController {
-    public static loadCustomers = async (req: Request, res: Response): Promise<void> => {
+    public static loadCustomers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -37,13 +37,11 @@ class CustomerController {
             });
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     }
 
-    public static getCustomer = async (req: Request, res: Response): Promise<void> => {
+    public static getCustomer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -58,13 +56,11 @@ class CustomerController {
             })
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     }
 
-    public static saveCustomer = async (req: Request, res: Response): Promise<void> => {
+    public static saveCustomer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const requestData = req.body;
 
         const data = requestData.customer;
@@ -116,14 +112,12 @@ class CustomerController {
             res.status(200).send(returnData);
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     }
 
 
-    public static addCustomer = async (req: Request, res: Response): Promise<void> => {
+    public static addCustomer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
@@ -143,9 +137,7 @@ class CustomerController {
             })
         }
         catch (error) {
-            res.status(500).send({
-                error: error
-            })
+            next(error)
         }
     }
 }

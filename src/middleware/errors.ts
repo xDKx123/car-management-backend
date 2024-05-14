@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-class BaseError extends Error {
+export class BaseError extends Error {
     status: number;
     code: string;
     value: any;
@@ -45,7 +45,7 @@ class BaseError extends Error {
 /**
  * Generic "400 Bad Request" error
  */
-class BadRequestError extends BaseError {
+export class BadRequestError extends BaseError {
     constructor(code?: string, message?: string) {
         super(400, code || 'BadRequest', message);
     }
@@ -54,7 +54,7 @@ class BadRequestError extends BaseError {
 /**
  * Generic "401 Unauthorized" error
  */
-class UnauthorizedError extends BaseError {
+export class UnauthorizedError extends BaseError {
     constructor(code?: string, message?: string) {
         super(401, code || 'Unauthorized', message);
     }
@@ -63,7 +63,7 @@ class UnauthorizedError extends BaseError {
 /**
  * Generic "403 Forbidden" error
  */
-class ForbiddenError extends BaseError {
+export class ForbiddenError extends BaseError {
     constructor(code?: string, message?: string) {
         super(403, code || 'Forbidden', message);
     }
@@ -72,7 +72,7 @@ class ForbiddenError extends BaseError {
 /**
  * Generic "404 Not Found" error
  */
-class NotFoundError extends BaseError {
+export class NotFoundError extends BaseError {
     constructor(code?: string, message?: string) {
         super(404, code || 'NotFound', message);
     }
@@ -81,7 +81,7 @@ class NotFoundError extends BaseError {
 /**
  * Generic "409 Conflict" error
  */
-class ConflictError extends BaseError {
+export class ConflictError extends BaseError {
     constructor(code?: string, message?: string) {
         super(409, code || 'Conflict', message);
     }
@@ -91,7 +91,7 @@ class ConflictError extends BaseError {
 /**
  * Generic "500 Internal Server Error" error
  */
-class InternalServerError extends BaseError {
+export class InternalServerError extends BaseError {
     constructor(code?: string, message?: string) {
         super(500, code || 'InternalServerError', message);
     }

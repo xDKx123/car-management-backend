@@ -5,10 +5,20 @@ import express, {
     Request,
     Response
 } from 'express';
+import './process';
 
 require('dotenv').config();
 
-import './database/config';
+import { connectToDatabase } from './database/config';
+
+try {
+    connectToDatabase();
+}
+catch (error) {
+    logger.error(error);
+    process.exit(1);
+}
+
 
 import path from 'path';
 import administrationRouter from './routes/administration.router';
@@ -21,6 +31,7 @@ import customerRouter from './routes/customer.router';
 import userRouter from './routes/user.router';
 import utilityRouter from './routes/utility.router';
 import logger from './logging/config';
+import ErrorMiddleware from './middleware/error.middleware';
 
 const app: Express = express();
 app.use(cors())
@@ -61,8 +72,9 @@ app.use(utilityRouter);
 
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
+app.use(ErrorMiddleware.logError);
+app.use(ErrorMiddleware.handle);
 //https://stackoverflow.com/questions/26818071/mongoose-schema-hasnt-been-registered-for-model
-
 
 app.listen(process.env.BACKEND_PORT!, () => {
     logger.info(`Example app listening at http://localhost:${process.env.BACKEND_PORT}`);
