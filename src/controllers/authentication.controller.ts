@@ -30,8 +30,9 @@ class AuthenticationController {
                 const passwordMatch = await comparePassword(concatPasswordAndSalt(data.password, user.salt), user.password)
 
                 if (passwordMatch) {
-                    const accessToken = AuthMiddleware.generateAccessToken(user.email);
-                    const refreshToken = AuthMiddleware.generateRefreshToken(user.email);
+                    const accessToken = AuthMiddleware.generateToken(req.user.email, process.env.ACCESS_TOKEN_SECRET as string, Number(process.env.ACCESS_TOKEN_EXPIRES_IN as string));
+                    const refreshToken = AuthMiddleware.generateToken(req.user.email, process.env.REFRESH_TOKEN_SECRET as string, Number(process.env.REFRESH_TOKEN_EXPIRES_IN as string));
+
 
                     res.status(200).send({
                         user: user,
@@ -51,8 +52,8 @@ class AuthenticationController {
 
     public static refreshToken = async (req: Request, res: Response): Promise<void> => {
         try {
-            const accessToken = AuthMiddleware.generateAccessToken(req.user.email);
-            const refreshToken = AuthMiddleware.generateRefreshToken(req.user.email);
+            const accessToken = AuthMiddleware.generateToken(req.user.email, process.env.ACCESS_TOKEN_SECRET as string, Number(process.env.ACCESS_TOKEN_EXPIRES_IN as string));
+            const refreshToken = AuthMiddleware.generateToken(req.user.email, process.env.REFRESH_TOKEN_SECRET as string, Number(process.env.REFRESH_TOKEN_EXPIRES_IN as string));
 
             res.status(200).send({
                 accessToken: accessToken,

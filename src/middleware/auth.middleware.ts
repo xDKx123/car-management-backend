@@ -69,18 +69,18 @@ class AuthMiddleware {
         });
     };
 
-    public static generateAccessToken = (email: string): string => {
-        const accessToken = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN });
+    /**
+     * 
+     * @param email we are only using users email to generate the token
+     * @param secret the secret key to sign the token
+     * @param expiresIn the time the token will expire in milliseconds
+     * @returns 
+     */
+    public static generateToken = (email: string, secret: string, expiresIn: number): string => {
+        const accessToken = jwt.sign({ email: email }, secret, { expiresIn: expiresIn });
 
         return accessToken;
     }
-
-    public static generateRefreshToken = (email: string): string => {
-        const refreshToken = jwt.sign({ email: email }, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN });
-
-        return refreshToken;
-    }
-
 }
 
 export default AuthMiddleware;

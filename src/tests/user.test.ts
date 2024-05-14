@@ -3,7 +3,7 @@ import { IUser } from "../models/user";
 import { checkIsEmailValid, checkIsValidVin, validateIdNumber } from "../utils/utils";
 
 import '../database/config';
-import { generatePasswordSalt, validatePassword } from "../middleware/password";
+import { comparePassword, concatPasswordAndSalt, generatePasswordSalt, validatePassword } from "../middleware/password";
 
 const dotenv = require('dotenv');
 dotenv.config({ path: '../../.env' });
@@ -94,6 +94,36 @@ describe('User', () => {
         expect(validatePassword(password)).toBe(false);
     });
 
+    it('should check validity of concat function concatPasswordAndSalt', () => {
+        const password = 'TestDavid123!';
+        const salt = '$2b$10$2qd3kaO9NwWuwML0wsPPru'
+
+        const concatedPassword = concatPasswordAndSalt(password, salt);
+
+        expect(concatedPassword).toBe(concatedPassword);
+    });
+
+    it('should check validity of concat function concatPasswordAndSalt', async () => {
+        const password = 'TestDavid123!';
+        const salt = '$2b$10$2qd3kaO9NwWuwML0wsPPru'
+
+        const concatedPassword = concatPasswordAndSalt(password, salt);
+
+        const comparison = await comparePassword(concatedPassword, '$2b$10$axctyDRLvO/La64mXEfbOeZ1CXVNTkF2SA1YvrEpAjZxjHt8ZjzCm');
+
+        expect(comparison).toBeTruthy();
+    });
+
+    it('should generate salt', async () => {
+        const salt = await generatePasswordSalt()
+        expect(salt).toBeDefined();
+    });
+
+    it('should return false if the password is invalid', () => {
+        const password = 'Test1234';
+        const salt = 'somerandomsalt';
+        expect(validatePassword(password)).toBe(false);
+    });
 
     it('should return new user', async () => {
         const salt = await generatePasswordSalt();
