@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/load', AuthMiddleware.authenticate, CustomerController.loadCustomers);
 router.post('/getById', AuthMiddleware.authenticate, CustomerController.getCustomer);
-router.post('/save', AuthMiddleware.authenticate, CustomerController.saveCustomer);
+router.post('/update', AuthMiddleware.authenticate, CustomerController.updateCustomer);
 router.post('/add', AuthMiddleware.authenticate, CustomerController.addCustomer);
 
 export default router;

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import Customer from '../models/customer';
 import logger from '../logging/config';
+import CustomerQuery from '../database/queries/customer.query';
 
 
 interface SaveCustomerReturnType {
@@ -60,7 +61,7 @@ class CustomerController {
         }
     }
 
-    public static saveCustomer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    public static addCustomer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const requestData = req.body;
 
         const data = requestData.customer;
@@ -86,30 +87,11 @@ class CustomerController {
         }
 
         try {
-            let returnData: SaveCustomerReturnType = {
-                customer: null,
-                created: false,
-            }
+            const customer = CustomerQuery.add(customerData)
 
-            if (data.id) {
-                const customer = await Customer.findByIdAndUpdate(data.id, customerData)
-
-                returnData = {
-                    customer: customer as typeof Customer | null,
-                    created: false
-                }
-            }
-            else {
-                const newCustomer = new Customer(customerData)
-                await newCustomer.save();
-
-                returnData = {
-                    customer: newCustomer as unknown as typeof Customer | null,
-                    created: true
-                }
-            }
-
-            res.status(200).send(returnData);
+            res.status(200).send({
+                customer: customer
+            });
         }
         catch (error) {
             next(error)
@@ -117,23 +99,16 @@ class CustomerController {
     }
 
 
-    public static addCustomer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    public static updateCustomer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const data = req.body;
 
         logger.info(data)
 
         try {
-            const newCustomer = new Customer({
-                name: data.name,
-                surname: data.surname,
-                email: data.email,
-                phoneNumber: data.phoneNumber
-            })
-
-            await newCustomer.save();
+            const customer = await CustomerQuery.update(data.customer)
 
             res.status(200).send({
-                car: newCustomer
+                customer: customer
             })
         }
         catch (error) {
