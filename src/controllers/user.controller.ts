@@ -205,6 +205,38 @@ class UserController {
             next(error)
         }
     };
+
+    public static createSuperAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const data = req.body;
+
+        logger.info(data)
+
+        try {
+            const salt = await generatePasswordSalt();
+
+            const combinedPassword = concatPasswordAndSalt(data.password, salt);
+
+            const encodedPassword = await encodePassword(combinedPassword);
+
+            const userData: Partial<IUser> = {
+                username: data.username,
+                password: encodedPassword,
+                salt: salt,
+                isSuperAdmin: true,
+            }
+
+            const user = await UserQuery.addUser(userData);
+
+            res.status(200).send({
+                user: user
+            })
+
+            return
+        }
+        catch (error) {
+            next(error)
+        }
+    };
 }
 
 export default UserController;

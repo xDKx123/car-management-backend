@@ -1,11 +1,9 @@
-import { Request, Response, NextFunction } from "express";
-import { checkSchema, ValidationChain, validationResult } from "express-validator";
-import { checkIsEmailValid } from "../utils/utils";
-import { RunnableValidationChains } from "express-validator/src/middlewares/schema";
-import { validateRequest } from "../middleware/validation";
-import logger from "../logging/config";
+import { Request } from "express";
+import { checkSchema } from "express-validator";
 import UserQuery from "../database/queries/user.query";
 import { validatePassword } from "../middleware/password";
+import { validateRequest } from "../middleware/validation";
+import { checkIsEmailValid } from "../utils/utils";
 
 class UserSchemaValidator {
     public static validateEmail = () => {
@@ -107,6 +105,45 @@ class UserSchemaValidator {
                     in: 'body',
                     custom: {
                         options: validatePassword,
+                        errorMessage: 'Password does not meet requirements',
+                        bail: true
+                    }
+                },
+                validatePassword: {
+                    in: 'body',
+                    custom: {
+                        options: (value: string, { req }: {req: Partial<Request>}) => {
+                            return value === req.body.password;
+                        },
+                        errorMessage: 'Passwords do not match',
+                        bail: true,
+                    }
+                }
+            }),
+            validateRequest
+        ]
+    }
+
+    public static createSuperAdmin = () => {
+                return [
+            checkSchema({
+                username: {
+                    in: 'body',
+                    custom: {
+                        options: async (value: string) => {
+                            const user = await UserQuery.getUserByUsername(value);
+
+                            return !user;
+                        },
+                        errorMessage: 'Username exists',
+                    }
+                },
+                password: {
+                    in: 'body',
+                    custom: {
+                        options: async (value: string) => {
+                            return value.length > 0;
+                        },
                         errorMessage: 'Password does not meet requirements',
                         bail: true
                     }

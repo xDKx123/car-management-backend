@@ -21,11 +21,9 @@ export class BaseError extends Error {
 
     toResponse() {
         return {
-            error: {
-                status: this.status,
-                error: this.toObject(),
-                value: this.value,
-            },
+            status: this.status,
+            error: this.toObject(),
+            value: this.value,
         };
     }
 
@@ -34,7 +32,7 @@ export class BaseError extends Error {
             const resp = this.toResponse();
 
             if (valueField) {
-                resp.error.value = _.get(item, valueField);
+                resp.value = _.get(item, valueField);
             }
 
             return Object.assign(item, resp);
@@ -47,7 +45,7 @@ export class BaseError extends Error {
  */
 export class BadRequestError extends BaseError {
     constructor(code?: string, message?: string) {
-        super(400, code || 'BadRequest', message);
+        super(400, code || 'badRequest', message);
     }
 }
 
@@ -56,7 +54,7 @@ export class BadRequestError extends BaseError {
  */
 export class UnauthorizedError extends BaseError {
     constructor(code?: string, message?: string) {
-        super(401, code || 'Unauthorized', message);
+        super(401, code || 'unauthorized', message);
     }
 }
 
@@ -65,7 +63,7 @@ export class UnauthorizedError extends BaseError {
  */
 export class ForbiddenError extends BaseError {
     constructor(code?: string, message?: string) {
-        super(403, code || 'Forbidden', message);
+        super(403, code || 'forbidden', message);
     }
 }
 
@@ -74,7 +72,7 @@ export class ForbiddenError extends BaseError {
  */
 export class NotFoundError extends BaseError {
     constructor(code?: string, message?: string) {
-        super(404, code || 'NotFound', message);
+        super(404, code || 'notFound', message);
     }
 }
 
@@ -83,7 +81,7 @@ export class NotFoundError extends BaseError {
  */
 export class ConflictError extends BaseError {
     constructor(code?: string, message?: string) {
-        super(409, code || 'Conflict', message);
+        super(409, code || 'conflict', message);
     }
 }
 
@@ -93,6 +91,6 @@ export class ConflictError extends BaseError {
  */
 export class InternalServerError extends BaseError {
     constructor(code?: string, message?: string) {
-        super(500, code || 'InternalServerError', message);
+        super(500, code || 'internalServerError', message);
     }
 }

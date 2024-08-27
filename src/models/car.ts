@@ -9,20 +9,20 @@ interface ICar extends mongoose.Document {
     modelCar: ICarModel['_id'],
     vin: string,
     registrationPlate: string,
-    km: Number,
+    km: number,
     isFree: Boolean,
     fuel: CarFuel,
     bodyType: CarBody,
     transmission: CarTransmission,
-    fuelCapacity: Number,
+    fuelCapacity: number,
     description: string,
-    year: Number,
-    kw: Number
-    ccm: Number,
+    year: number,
+    kw: number
+    ccm: number,
     colorExterior: string,
     colorInterior: string,
-    numberOfDoors: Number,
-    numberOfSeats: Number,
+    numberOfDoors: number,
+    numberOfSeats: number,
     fourWheelDrive: Boolean,
     heatedSeatsFront: Boolean,
     heatedSeatsRear: Boolean,
@@ -41,7 +41,8 @@ interface ICar extends mongoose.Document {
     towHook: Boolean,
     deletedAt: Date | null
     createdAt: Date,
-    updatedAt: Date
+    updatedAt: Date,
+    fuelConsumption: number
 }
 
 const carSchema = new mongoose.Schema<ICar>(
@@ -205,6 +206,11 @@ const carSchema = new mongoose.Schema<ICar>(
             type: Date,
             required: false,
             default: null
+        },
+        fuelConsumption: {
+            type: Number,
+            required: true,
+            default: 0
         }
     }
 )

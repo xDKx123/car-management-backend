@@ -13,6 +13,7 @@ router.post('/changePassword', AuthMiddleware.authenticate, UserSchemaValidator.
 router.post('/getById', AuthMiddleware.authenticate, UserSchemaValidator.getById(), UserController.userById);
 router.post('/checkIfEmailExists', AuthMiddleware.authenticate, UserController.checkIfEmailExists);
 router.post('/create', UserSchemaValidator.create(), UserController.create);
+router.post('/createSuperAdmin', UserSchemaValidator.createSuperAdmin(), UserController.createSuperAdmin);
 
 router.get('/current', AuthMiddleware.authenticate, UserController.current);
 

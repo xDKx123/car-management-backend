@@ -8,7 +8,8 @@ interface IUser extends mongoose.Document {
     verifiedAt: Date | null
     createdAt: Date,
     updatedAt: Date | null,
-    salt: string
+    salt: string,
+    isSuperAdmin: Boolean
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -20,8 +21,8 @@ const userSchema = new mongoose.Schema<IUser>(
         },
         email: {
             type: String,
-            required: true,
-            unique: true,
+            required: false,
+            unique: false,
         },
         password: {
             type: String,
@@ -51,6 +52,10 @@ const userSchema = new mongoose.Schema<IUser>(
         salt: {
             type: String,
             required: true
+        },
+        isSuperAdmin: {
+            type: Boolean,
+            default: false
         }
     }
 )

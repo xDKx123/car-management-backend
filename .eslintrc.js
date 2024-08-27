@@ -32,12 +32,10 @@ module.exports = {
         '*/.js',
     ],
     rules: {
-        'react/prop-types': 'warn',
         '@typescript-eslint/no-this-alias': 'warn',
         'unused-imports/no-unused-imports': 'error',
         "@typescript-eslint/no-explicit-any": "warn",
         "@typescript-eslint/no-unused-vars": "warn",
-
         indent: [
             'error',
             4

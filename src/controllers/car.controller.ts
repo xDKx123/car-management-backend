@@ -5,9 +5,11 @@ import CarBrand from '../models/carBrand';
 import CarFuel, { carFuelFromString } from '../models/carFuel';
 import CarModel from '../models/carModel';
 import CarTransmission, { carTransmissionFromString } from '../models/carTransmission';
-import { checkIsValidVin } from '../utils/utils';
+import { checkIsValidVin, metersToKilometers } from '../utils/utils';
 import logger from '../logging/config';
 import CarQuery from '../database/queries/car.query';
+import FuelController from './fuel.controller';
+import CarPriceHistory, { ICarPriceHistory } from '../models/carPriceList';
 
 class CarController {
     public static addCar = async (req: Request, res: Response): Promise<void> => {
@@ -199,6 +201,102 @@ class CarController {
             carTransmissionTypes: carTransmissionTypes
         })
     };
+
+    public static calculatePrice = (distance: number, consumption: number, fuelPrice: number): number => {
+        return (distance / 100) * consumption * fuelPrice;
+    }
+
+    public static calculateDrivingPrice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const data = req.body;
+
+        logger.info(data)
+
+        try {
+            const car = await Car.findById(data.carId);
+            
+            if (!car) {
+                res.status(400).send({
+                    error: 'Car not found'
+                })
+
+                return;
+            }
+
+            if (!data.distance) {
+                res.status(400).send({
+                    error: 'Fuel price and distance are required'
+                })
+
+                return;
+            }
+
+            let fuelPrice: number = data.fuelPrice; // EUR/L
+            if (!data.fuelPrice) {
+                fuelPrice = await FuelController.getPriceForFuel(car.fuel.toString());
+            }
+
+            const distanceMeters: number = data.distance; // meters
+
+            const distanceKilometers: number = metersToKilometers(distanceMeters); // km
+
+            const consumption = car.fuelConsumption; // L/100km
+
+            logger.info(`Fuel price: ${fuelPrice}, distance: ${distanceKilometers}, consumption: ${consumption}`)
+
+            const price = this.calculatePrice(distanceKilometers, consumption, fuelPrice)
+
+            res.status(200).send({
+                price: price
+            });
+        }
+        catch (error) {
+            next(error)
+        }
+    }
+
+    public static loadCarPrice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const data = req.body;
+
+        logger.info(data)
+
+        /*const carPrice: Partial<ICarPriceHistory> = {
+            car: data.carId,
+            amount: 40,
+            description: 'Price for 1 day',
+            validFrom: new Date()
+        };
+
+        await CarPriceHistory.create(carPrice);*/
+
+        try {
+            const car = await Car.findById(data.carId);
+
+            if (!car) {
+                res.status(400).send({
+                    error: 'Car not found'
+                })
+
+                return;
+            }
+
+            const price = await CarPriceHistory.findOne({ car: car._id, validTo: null });
+
+            if (!price) {
+                res.status(400).send({
+                    error: 'Price not found'
+                })
+
+                return;
+            }
+
+            res.status(200).send({
+                price: price
+            });
+        }
+        catch (error) {
+            next(error)
+        }
+    }
 }
 
 export default CarController;

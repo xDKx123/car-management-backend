@@ -1,9 +1,16 @@
 import { NextFunction, Request, Response } from "express";
+import SendGrid, { AttachmentData } from "../core/sendgrid";
+import logger from "../logging/config";
 import Car from "../models/car";
 import CarBrand from "../models/carBrand";
 import CarModel from "../models/carModel";
 import Contract from "../models/contract";
-import logger from "../logging/config";
+import Customer from "../models/customer"; 
+
+import fs from 'fs';
+import path from "path";
+import PDFDocument from 'pdfkit';
+import { getPdfFolder } from "../utils/utils";
 
 class ContractController {
     public static loadContractsLeavingToday = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -182,10 +189,52 @@ class ContractController {
                 car: contractData.carId,
                 customer: contractData.customerId,
                 leavingDate: contractData.leavingDate,
-                returnDate: contractData.returnDate
+                returnDate: contractData.returnDate,
+                gps: contractData.gpsId,
+                winterChains: contractData.winterChains,
+                childSeat: contractData.childSeatId,
+                additionalDriverId: contractData.additionalDriverId,
+                carRoofBox: contractData.carRoofBoxId,
+                amount: contractData.amount,
+                discount: contractData.discount,
             })
 
-            await newContract.save();
+            const contract = await newContract.save();
+
+            const customer = await Customer.findById(contractData.customerId);
+
+            if (!customer || !customer.email) {
+                res.status(500).send({
+                    error: 'No customer found'
+                })
+                return;
+            }
+
+            const pdf = await ContractController.createPdf(contract);
+
+            const attachment: AttachmentData[] = [
+                {
+                    content: pdf,
+                    filename: 'contract.pdf',
+                    type: 'application/pdf',
+                    disposition: 'attachment',
+                }
+            ]
+
+            const mail = new SendGrid({
+                to: customer?.email,
+                from: 'dejvidkovac@gmail.com',
+                subject: 'Contract' + contract.createdAt.toDateString(),
+                text: 'New contract created',
+                attachments: attachment
+            });
+
+            mail.sendEmail().then(() => {
+                logger.info('Email sent successfully')
+            }).catch((error) => {
+                logger.error('Error sending email:', error);
+            });
+
 
             res.status(200).send({
                 contract: newContract
@@ -194,6 +243,46 @@ class ContractController {
         catch (error) {
             next(error)
         }
+    }
+
+    private static createPdf = async (contract: any) => {
+        const doc = new PDFDocument();
+        const fileName = contract.id + '.pdf';
+
+        const filePath = path.join(getPdfFolder(), fileName);
+        logger.info(filePath);
+
+        const fileStream = fs.createWriteStream(filePath);
+        doc.pipe(fileStream);
+
+        doc.fontSize(25).text('Travel Order', {
+            align: 'center'
+        });
+
+        doc.end();
+
+        /*doc.on('end', () => {
+            res.download(filePath, (err) => {
+                if (err) {
+                    console.log(err);
+                }
+                fileStream?.destroy(); // delete the file after download
+            });
+        });*/
+
+        let index = 0;
+        while (!fileStream.writableEnded) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            index++;
+            if (index > 3) {
+                throw new Error('Error while creating pdf');
+            }
+        }
+
+        // read file and cast it to base64
+        const file = fs.readFileSync(filePath).toString('base64');
+
+        return file;
     }
 }
 

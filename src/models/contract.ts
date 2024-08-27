@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 import { ICar } from './car';
 import { ICustomer } from './customer';
+import { IGpsPriceHistory } from './gpsPriceHistory';
+import { IChildSeatPriceHistory } from './childSeatPriceHistory';
+import { IRoofStoragePriceHistory } from './roofStoragePriceHistory';
 
 interface IContract extends mongoose.Document {
     name: string,
@@ -8,15 +11,16 @@ interface IContract extends mongoose.Document {
     car: ICar['_id'],
     returnDate: Date,
     leavingDate: Date
-    createAt: Date,
-    gps: boolean,
+    createdAt: Date,
+    gps: IGpsPriceHistory['_id'] | null,
     winterChains: boolean,
-    childSeat: boolean,
-    additionalDriverId: ICustomer['_id']
-    carRoofBox: boolean,
+    childSeat: IChildSeatPriceHistory['_id'] | null,
+    additionalDriverId: ICustomer['_id'] | null
+    carRoofBox: IRoofStoragePriceHistory['_id'] | null,
     amount: number,
     updatedAt: Date | null,
     deletedAt: Date | null,
+    discount: number,
     //images
 }
 
@@ -44,21 +48,23 @@ const contractSchema = new mongoose.Schema<IContract>(
             type: Date,
             required: true
         },
-        createAt: {
+        createdAt: {
             type: Date,
             default: Date.now
         },
         gps: {
-            type: Boolean,
-            default: false
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'GpsPriceHistory',
+            default: null,
         },
         winterChains: {
             type: Boolean,
             default: false
         },
         childSeat: {
-            type: Boolean,
-            default: false
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'ChildSeatPriceHistory',
+            default: null
         },
         additionalDriverId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -66,8 +72,9 @@ const contractSchema = new mongoose.Schema<IContract>(
             default: null,
         },
         carRoofBox: {
-            type: Boolean,
-            default: false
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'RoofStoragePriceHistory',
+            default: null
         },
         amount: {
             type: Number,
@@ -82,7 +89,10 @@ const contractSchema = new mongoose.Schema<IContract>(
             type: Date,
             default: null,
             required: false,
-
+        },
+        discount: {
+            type: Number,
+            default: 0
         }
     }
 )

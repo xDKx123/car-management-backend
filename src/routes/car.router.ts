@@ -12,5 +12,6 @@ router.post('/isValidVin', AuthMiddleware.authenticate, CarController.isValidVin
 router.post('/loadBodyTypes', AuthMiddleware.authenticate, CarController.loadCarBodyTypes);
 router.post('/loadFuelTypes', AuthMiddleware.authenticate, CarController.loadCarFuelTypes);
 router.post('/loadTransmissionTypes', AuthMiddleware.authenticate, CarController.loadCarTransmissionTypes);
+router.post('/calculateDrivingPrice', CarController.calculateDrivingPrice);
 
 export default router;

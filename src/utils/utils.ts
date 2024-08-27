@@ -1,3 +1,4 @@
+import path from "path";
 import logger from "../logging/config";
 
 const checkIsEmailValid = (email: string): boolean => {
@@ -43,8 +44,18 @@ const validateIdNumber = (idNumber: string): boolean => {
     return isValid;
 };
 
+const metersToKilometers = (meters: number): number => {
+    return meters / 1000;
+}
+
+const getPdfFolder = (): string => { 
+    return path.join(__dirname, '..', 'fileStorage');
+};
+
 export {
     checkIsEmailValid,
     checkIsValidVin,
     validateIdNumber,
+    metersToKilometers,
+    getPdfFolder
 };

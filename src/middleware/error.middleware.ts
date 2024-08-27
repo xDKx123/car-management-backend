@@ -5,7 +5,8 @@ import { BaseError } from "./errors";
 class ErrorMiddleware {
     public static logError(err: Error, req: Request, res: Response, next: NextFunction): void {
         if (err instanceof BaseError) {
-            logger.error(`${err.code} - ${err.message}`);
+            //log requestId from res headers
+            logger.error({ requestId: res.get('X-Request-Id'), error: err.toObject() });
         }
         else {
             logger.error(err.message);
@@ -17,7 +18,6 @@ class ErrorMiddleware {
         if (err instanceof BaseError) {
             res.status(err.status).send(err.toResponse());
         } else {
-            logger.error(err.message);
             res.status(500).send({
                 error: {
                     status: 500,

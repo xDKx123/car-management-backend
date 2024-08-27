@@ -1,10 +1,11 @@
 
-import mongoose, { Connection } from "mongoose";
+import mongoose from "mongoose";
 import logger from "../logging/config";
 
 const connectToDatabase = () => {
     mongoose.connect(process.env.MONGO_DB_URL!).then(() => {
-        logger.info('Connected to the database', process.env.MONGO_DB_URL);
+        logger.info('Connected to the database');
+        logger.info(`Database URL: ${process.env.MONGO_DB_URL}`);
     }).catch((error) => {
         logger.error('Error connecting to the database');
         logger.error(error);
@@ -29,6 +30,5 @@ const closeConnection = () => {
 }
 
 export {
-    connectToDatabase,
-    closeConnection
-}
+    closeConnection, connectToDatabase
+};

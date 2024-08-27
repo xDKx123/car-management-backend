@@ -4,6 +4,7 @@ import { IContract } from './contract';
 interface IInvoice extends mongoose.Document {
     contract: IContract['_id']
     createdAt: Date,
+    updatedAt: Date | null,
     paidAt: Date
     paidWith: string,
 }
