@@ -1,6 +1,6 @@
-import {Request, Response, NextFunction } from "express";
-import Employee from "../models/employee";
+import { NextFunction, Request, Response } from "express";
 import EmployeeQuery from "../database/queries/employee.query";
+import Employee from "../models/employee";
 
 class EmployeeController {
     public static load = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -32,6 +32,48 @@ class EmployeeController {
             next(error)
         }
     };
+
+    public static update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const data = req.body;
+
+        try {
+            const employee = EmployeeQuery.update(data.id, data);
+
+            if (!employee) {
+                res.status(404).send({
+                    message: 'Employee not found'
+                });
+            }
+
+            res.status(200).send({
+                employee: employee
+            });
+        }
+        catch (error) {
+            next(error)
+        }
+    };
+    
+    public static getById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const id = req.body.id;
+
+        try {
+            const employee = await Employee.findById(id);
+
+            if (!employee) {
+                res.status(404).send({
+                    message: 'Employee not found'
+                });
+            }
+
+            res.status(200).send({
+                employee: employee
+            });
+        }
+        catch (error) {
+            next(error)
+        }
+    }
 }
 
 export default EmployeeController;
